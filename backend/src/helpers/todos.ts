@@ -60,7 +60,7 @@ export async function updateTodo(
   }
   
   //generate upload url for todo item
-  export async function generateUploadUrl(jwtToken: string, todoId: string): Promise<string> {
+  export async function createAttachmentPresignedUrl(jwtToken: string, todoId: string): Promise<string> {
     const userId = getUserId(jwtToken);
     const bucketName = process.env.ATTACHMENT_S3_BUCKET;
     const urlExpiration = parseInt(process.env.SIGNED_URL_EXPIRATION, 10);
