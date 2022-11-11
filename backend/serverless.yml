@@ -2,7 +2,7 @@
 org: nuel07
 app: nuel-serverless-todo-app
 service: nuel-serverless-todo-app
-frameworkVersion: '3.23.0'
+frameworkVersion: '3.24.1'
 
 plugins:
   - serverless-webpack
