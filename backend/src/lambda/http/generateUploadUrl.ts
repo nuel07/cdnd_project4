@@ -1,19 +1,18 @@
 import 'source-map-support/register'
 
-import { APIGatewayProxyHandler, APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
-//import * as middy from 'middy'
-//import { cors, httpErrorHandler } from 'middy/middlewares'
+import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
+import * as middy from 'middy'
+import { cors, httpErrorHandler } from 'middy/middlewares'
 
 import { createAttachmentPresignedUrl } from '../../helpers/todos'
-//import { getUserId } from '../utils'
+import { getUserId } from '../utils'
 
-export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+export const handler = middy(
+  async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     const todoId = event.pathParameters.todoId
     // TODO: Return a presigned URL to upload a file for a TODO item with the provided id
-    const authorization = event.headers.Authorization
-    const split = authorization.split(' ')
-    const jwtToken = split[1]
-    const signedUrl: string = await createAttachmentPresignedUrl(todoId, jwtToken)
+    const userId = getUserId(event)
+    const signedUrl: string = await createAttachmentPresignedUrl(todoId, userId)
     return {
       statusCode: 201,
       headers: {
@@ -25,11 +24,11 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
       })
     }
   }
-
-/*handler
+)
+handler
   .use(httpErrorHandler())
   .use(
     cors({
       credentials: true
     })
-  )*/
+  )

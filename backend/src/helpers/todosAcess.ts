@@ -13,7 +13,7 @@ const logger = createLogger('TodosAccess')
 // TODO: Implement the dataLayer logic
 export class TodosAccess {
     constructor(
-        private readonly docClient: DocumentClient = new XAWS.DyamoDB.DocumentClient(),
+        private readonly docClient: DocumentClient = new XAWS.DynamoDB.DocumentClient(),
         private readonly todosTable = process.env.TODOS_TABLE
     ){}
 
@@ -34,7 +34,7 @@ export class TodosAccess {
     async getTodo(userId: string, todoId: string): Promise<TodoItem>{
         logger.info(`Getting todo item: ${todoId}`);
         const result = await this.docClient.query({
-            TableName: this.docClient,
+            TableName: this.todosTable,
             KeyConditionExpression: 'userId = :userId and todoId = :todoId',
             ExpressionAttributeValues: {
                 ':userId': userId,
@@ -52,6 +52,7 @@ export class TodosAccess {
             TableName: this.todosTable,
             Item: newItem
         }).promise();
+        logger.info('New Todo item created')
         return newItem;
     }
 

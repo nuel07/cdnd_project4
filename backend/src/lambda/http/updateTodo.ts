@@ -1,21 +1,20 @@
 import 'source-map-support/register'
 
-import { APIGatewayProxyHandler, APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
-//import * as middy from 'middy'
-//import { cors, httpErrorHandler } from 'middy/middlewares'
+import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
+import * as middy from 'middy'
+import { cors, httpErrorHandler } from 'middy/middlewares'
 
 import { updateTodo } from '../../helpers/todos'
 import { UpdateTodoRequest } from '../../requests/UpdateTodoRequest'
-//import { getUserId } from '../utils'
+import { getUserId } from '../utils'
 
-export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+export const handler = middy(
+  async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     const todoId = event.pathParameters.todoId
     const updatedTodo: UpdateTodoRequest = JSON.parse(event.body)
     // TODO: Update a TODO item with the provided id using values in the "updatedTodo" object
-    const authorization = event.headers.Authorization
-    const split = authorization.split(' ')
-    const jwtToken = split[1]
-    await updateTodo(todoId, updatedTodo, jwtToken)
+    const userId = getUserId(event)
+    await updateTodo(todoId, updatedTodo, userId)
 
     return {
       statusCode: 204,
@@ -26,11 +25,11 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
       body: ''
     }
   }
-
-/*handler
+)
+handler
   .use(httpErrorHandler())
   .use(
     cors({
       credentials: true
     })
-  )*/
+  )
